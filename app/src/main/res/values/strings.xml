@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Self_improvement</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="i_dont_have_account"><u>Hesabım yok...</u></string>
+    <string name="i_have_account"><u>Hesabım var...</u></string>
+    <string name="image_string">image</string>
+
 </resources>
