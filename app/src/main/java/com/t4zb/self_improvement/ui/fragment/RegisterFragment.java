@@ -2,6 +2,7 @@ package com.t4zb.self_improvement.ui.fragment;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
@@ -20,6 +21,8 @@ import androidx.fragment.app.DialogFragment;
 
 import com.t4zb.self_improvement.app.AppConfig;
 import com.t4zb.self_improvement.databinding.FragmentRegisterBinding;
+import com.t4zb.self_improvement.model.AuthModel;
+import com.t4zb.self_improvement.services.InitializeService;
 import com.t4zb.self_improvement.ui.enums.PopupType;
 import com.t4zb.self_improvement.ui.lıstener.PopupChangeListener;
 import com.t4zb.self_improvement.ui.view_model.AuthViewModel;
@@ -96,6 +99,15 @@ public class RegisterFragment extends DialogFragment {
                 return;
             }
             mBinging.loadingView.setVisibility(View.VISIBLE);
+
+
+            if (getActivity() != null){
+                Intent serviceIntent = new Intent(getActivity(), InitializeService.class);
+                getActivity().startService(serviceIntent);
+            }else {
+                AuthModel authModel = new AuthModel(false, "Register failed | service is not started");
+                authViewModel.setAuthsStatus(authModel);
+            }
             AppConfig.GMSAuth(authViewModel).registerWithEmail(username, mail, password);
         });
 

@@ -2,6 +2,7 @@ package com.t4zb.self_improvement.app;
 
 import com.t4zb.self_improvement.gms.authentication.FirebaseAuthHelper;
 import com.t4zb.self_improvement.gms.database.FirebaseDatabaseHelper;
+import com.t4zb.self_improvement.model.UserData;
 import com.t4zb.self_improvement.ui.view_model.AuthViewModel;
 
 public class AppConfig {
@@ -9,6 +10,7 @@ public class AppConfig {
     private static final String TAG = "AppConfig";
     private static AppConfig appConfig;
     private User user;
+    private UserData userData;
 
     /**
      * APPConfig()
@@ -32,6 +34,14 @@ public class AppConfig {
         return this.user;
     }
 
+    public UserData getUserData() {
+        return userData;
+    }
+
+    public void setUserData(UserData userData) {
+        this.userData = userData;
+    }
+
     /**
      * Function: setUser()
      */
@@ -44,6 +54,6 @@ public class AppConfig {
     }
 
     public static FirebaseDatabaseHelper GMSDatabase() {
-        return FirebaseDatabaseHelper.GetInstace();
+        return FirebaseDatabaseHelper.getInstance();
     }
 }

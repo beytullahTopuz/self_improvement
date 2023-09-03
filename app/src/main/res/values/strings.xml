@@ -5,4 +5,17 @@
     <string name="i_have_account"><u>Hesabım var...</u></string>
     <string name="image_string">image</string>
 
+    <string name="emoji_great">😊 Great</string>
+
+    <string-array name="emotion_list">
+        <item>&#x1F62D; Sad</item>
+        <item>&#x1F600; Happy</item>
+        <item>&#x1F621; Angry</item>
+        <item>&#x1F62B; Stressed</item>
+        <item>&#x1F605; Bored</item>
+        <item>&#x1F62A; Tired</item>
+        <item>&#x1F641; Unhappy</item>
+        <!-- Other adjectives can be added -->
+    </string-array>
+
 </resources>
