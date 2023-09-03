@@ -18,6 +18,8 @@ import com.t4zb.self_improvement.model.DailyStatus;
 import com.t4zb.self_improvement.model.UserData;
 import com.t4zb.self_improvement.ui.enums.ReceiverType;
 
+import java.util.ArrayList;
+
 public class InitializeService extends Service {
 
     @Nullable
@@ -50,6 +52,7 @@ public class InitializeService extends Service {
                 break;
             case userDailyStatus:
                 DailyStatus dailyStatus = new DailyStatus();
+                dailyStatus.setDailyStatusValue(new ArrayList<>());
                 dailyStatus.setUserDataId(APP.Config.getUserData().getUserDataId());
                 AppConfig.GMSDatabase().crateUserDailyStatus(dailyStatus);
                 break;

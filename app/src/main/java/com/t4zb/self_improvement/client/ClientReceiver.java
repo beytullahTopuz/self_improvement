@@ -53,6 +53,7 @@ public class ClientReceiver extends BroadcastReceiver {
                 break;
             case USER_UPDATE_SUCCESS:
                 BroadcastUserUpdateSuccess(type);
+                break;
             case USER_DAILY_STATUS_SUCCESS:
                 BroadcastDailyStatusSuccess(type);
                 break;

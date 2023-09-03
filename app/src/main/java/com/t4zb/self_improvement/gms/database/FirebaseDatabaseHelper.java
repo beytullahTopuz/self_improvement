@@ -3,22 +3,22 @@ package com.t4zb.self_improvement.gms.database;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.t4zb.self_improvement.app.APP;
 import com.t4zb.self_improvement.app.User;
-import com.t4zb.self_improvement.client.ClientReceiver;
 import com.t4zb.self_improvement.model.AuthModel;
 import com.t4zb.self_improvement.model.Avatar;
 import com.t4zb.self_improvement.model.DailyStatus;
+import com.t4zb.self_improvement.model.DailyStatusValue;
 import com.t4zb.self_improvement.model.UserData;
 import com.t4zb.self_improvement.ui.enums.ReceiverType;
 import com.t4zb.self_improvement.ui.view_model.AuthViewModel;
+import com.t4zb.self_improvement.ui.view_model.HomeFragmentViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FirebaseDatabaseHelper {
 
@@ -47,8 +47,7 @@ public class FirebaseDatabaseHelper {
             if (task.isSuccessful()) {
                 User mUser = task.getResult().toObject(User.class);
                 APP.Config.setUser(mUser);
-                AuthModel authModel = new AuthModel(true, "get success");
-                authViewModel.setAuthsStatus(authModel);
+                getUserData(authViewModel, APP.Config.getUser().getUserDataId());
             } else {
                 AuthModel authModel = new AuthModel(false, "get fail");
                 authViewModel.setAuthsStatus(authModel);
@@ -56,11 +55,32 @@ public class FirebaseDatabaseHelper {
         });
     }
 
+    public void getUserData(AuthViewModel authViewModel, String userDataId) {
+
+        firebaseFirestore.collection("userData")
+                .document(userDataId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        UserData userData = documentSnapshot.toObject(UserData.class);
+                        APP.Config.setUserData(userData);
+
+                        AuthModel authModel = new AuthModel(true, "get success");
+                        authViewModel.setAuthsStatus(authModel);
+                    } else {
+                        AuthModel authModel = new AuthModel(false, "get fail");
+                        authViewModel.setAuthsStatus(authModel);
+                    }
+                }).addOnFailureListener(e -> {
+                    AuthModel authModel = new AuthModel(false, "get fail");
+                    authViewModel.setAuthsStatus(authModel);
+                });
+    }
+
     public void postUser(User user) {
 
         firebaseFirestore.collection("user").document(user.getUserId()).set(user).addOnSuccessListener(unused -> {
             APP.Config.setUser(user);
-            // start service
             sendBroadcastMessage(ReceiverType.START_REGISTER_STATE);
         }).addOnFailureListener(e -> sendBroadcastMessage(ReceiverType.UNDEFINED));
     }
@@ -92,38 +112,46 @@ public class FirebaseDatabaseHelper {
 
     public void createUserAvatar(Avatar avatar) {
 
-        firebaseFirestore.collection("avatar").add(avatar).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                APP.Config.getUserData().setAvatarId(documentReference.getId());
-                sendBroadcastMessage(ReceiverType.USER_AVATAR_SUCCESS);
-            }
+        firebaseFirestore.collection("avatar").add(avatar).addOnSuccessListener(documentReference -> {
+            UserData userData = APP.Config.getUserData();
+            userData.setAvatarId(documentReference.getId());
+            APP.Config.setUserData(userData);
+            sendBroadcastMessage(ReceiverType.USER_AVATAR_SUCCESS);
         }).addOnFailureListener(e -> sendBroadcastMessage(ReceiverType.UNDEFINED));
     }
 
     public void crateUserDailyStatus(DailyStatus dailyStatus) {
 
         firebaseFirestore.collection("dailyStatus").add(dailyStatus).addOnSuccessListener(documentReference -> {
-            APP.Config.getUserData().setUserDailyStatusId(documentReference.getId());
+            UserData userData = APP.Config.getUserData();
+            userData.setUserDailyStatusId(documentReference.getId());
+            APP.Config.setUserData(userData);
             sendBroadcastMessage(ReceiverType.USER_DAILY_STATUS_SUCCESS);
         }).addOnFailureListener(e -> sendBroadcastMessage(ReceiverType.UNDEFINED));
+    }
+
+    public void addDailyEmotionStatus(DailyStatusValue dailyStatusValue, HomeFragmentViewModel homeFragmentViewModel) {
+
+        // burdaki listeyi roomDB den cek aylık , roomDbdekı sayı gun sayısı her 5 ve 5 ın katı oldugu zaman DB ye yaz
+        List<DailyStatusValue> dailyStatusValueList = new ArrayList<>();
+        dailyStatusValueList.add(dailyStatusValue);
+
+        UserData userData = APP.Config.getUserData();
+        firebaseFirestore.collection("dailyStatus")
+                .document(userData.getUserDailyStatusId()).update("dailyStatusValue", dailyStatusValueList)
+                .addOnSuccessListener(documentReference -> homeFragmentViewModel.setIsSetEmotionValueSuccess(true))
+                .addOnFailureListener(e -> homeFragmentViewModel.setIsSetEmotionValueSuccess(false));
     }
 
     private void sendBroadcastMessage(ReceiverType apiCommand) {
 
         Bundle bundle = new Bundle();
         Intent intent = new Intent();
-
         bundle.putString(ACTION_DATA_EVENT, apiCommand.Get());
         intent.putExtra("mBundle", bundle);
         intent.setAction(ACTION_DATA_EVENT);
 
         broadcastManager.sendBroadcast(intent);
     }
-
-    private ClientReceiver clientReceiver = new ClientReceiver(){
-
-    };
-
 
 }

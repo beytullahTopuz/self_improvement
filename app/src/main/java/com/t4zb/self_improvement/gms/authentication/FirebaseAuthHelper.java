@@ -59,6 +59,7 @@ public class FirebaseAuthHelper {
                 AppConfig.GMSDatabase().postUser(user);
             } else {
                 AuthModel authModel = new AuthModel(false, "Register failed");
+                APP.Config.clearUser();
                 authViewModel.setAuthsStatus(authModel);
             }
         });
@@ -74,6 +75,7 @@ public class FirebaseAuthHelper {
         @Override
         protected void BroadcastFAIL(ReceiverType receiverType) {
             AuthModel authModel = new AuthModel(false, "FAIL");
+            APP.Config.clearUser();
             authViewModel.setAuthsStatus(authModel);
         }
     };

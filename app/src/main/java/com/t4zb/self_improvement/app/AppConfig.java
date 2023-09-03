@@ -34,6 +34,10 @@ public class AppConfig {
         return this.user;
     }
 
+    public void clearUser() {
+        this.user = null;
+    }
+
     public UserData getUserData() {
         return userData;
     }

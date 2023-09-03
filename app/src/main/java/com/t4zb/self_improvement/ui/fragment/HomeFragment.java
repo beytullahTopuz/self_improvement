@@ -9,20 +9,26 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.t4zb.self_improvement.R;
+import com.t4zb.self_improvement.app.AppConfig;
 import com.t4zb.self_improvement.databinding.FragmentHomeBinding;
+import com.t4zb.self_improvement.model.DailyStatusValue;
 import com.t4zb.self_improvement.ui.adaptor.DailyCheckAdapter;
 import com.t4zb.self_improvement.ui.lıstener.ItemClickedListener;
+import com.t4zb.self_improvement.ui.view_model.HomeFragmentViewModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private Context mContext;
     private FragmentHomeBinding mBinding;
+    private HomeFragmentViewModel homeViewModel;
 
     public HomeFragment() {
     }
@@ -31,7 +37,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = requireActivity();
-
+        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeFragmentViewModel.class);
     }
 
     @Override
@@ -49,6 +55,13 @@ public class HomeFragment extends Fragment {
     }
 
     private final ItemClickedListener emotionItemClickedListener = (position, value) -> {
+
+        DailyStatusValue dailyStatusValue = new DailyStatusValue();
+        dailyStatusValue.setStatusIndex(position);
+        dailyStatusValue.setStatusValue(value);
+        dailyStatusValue.setDate(new Date());
+        // buraya degıl room  ye yaz ve roomdakı coun 5 ve 5 ın katı oldugu zaman fırabase e yaz performans ıcın
+   //     AppConfig.GMSDatabase().addDailyEmotionStatus(dailyStatusValue, homeViewModel);
 
     };
 
